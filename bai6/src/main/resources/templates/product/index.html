@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Products</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-4">
+
+    <h2 class="text-center mb-4">🛒 Product List</h2>
+
+    <!-- THÔNG BÁO -->
+    <div th:if="${message}" class="alert alert-success text-center">
+        <span th:text="${message}"></span>
+    </div>
+
+    <!-- NÚT THÊM -->
+    <a class="btn btn-primary mb-3" href="/products/create">
+        + Add Product
+    </a>
+
+    <!-- SEARCH + FILTER -->
+    <form class="row mb-3" method="get" action="/products">
+
+        <div class="col-md-4">
+            <input class="form-control" type="text" name="keyword" placeholder="Search product...">
+        </div>
+
+        <div class="col-md-4">
+            <select class="form-select" name="categoryId">
+                <option value="">All Category</option>
+                <option th:each="c : ${categories}"
+                        th:value="${c.id}"
+                        th:text="${c.name}">
+                </option>
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <button class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+
+    <!-- SORT -->
+    <div class="mb-3">
+        <a class="btn btn-outline-success" href="/products?sort=asc">⬆ Price</a>
+        <a class="btn btn-outline-danger" href="/products?sort=desc">⬇ Price</a>
+        <a class="btn btn-warning float-end" href="/cart">🛒 Cart</a>
+    </div>
+
+    <!-- PRODUCT GRID -->
+    <div class="row">
+
+        <div class="col-md-4 mb-4" th:each="p : ${products}">
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body text-center">
+
+                    <!-- IMAGE -->
+                    <img th:src="${p.image != null ? p.image : 'https://via.placeholder.com/200'}"
+                         class="img-fluid mb-2">
+
+                    <!-- NAME -->
+                    <h5 th:text="${p.name}"></h5>
+
+                    <!-- CATEGORY -->
+                    <p class="text-muted"
+                       th:text="${p.category != null ? p.category.name : ''}">
+                    </p>
+
+                    <!-- PRICE -->
+                    <h6 class="text-danger" th:text="${p.price} + ' $'"></h6>
+
+                    <!-- BUTTON -->
+                    <div class="mt-2">
+                        <a class="btn btn-success w-100 mb-1"
+                           th:href="@{/add-to-cart/{id}(id=${p.id})}">
+                            🛒 Add to Cart
+                        </a>
+
+                        <a class="btn btn-warning w-100 mb-1"
+                           th:href="@{/products/edit/{id}(id=${p.id})}">
+                            Edit
+                        </a>
+
+                        <a class="btn btn-danger w-100"
+                           th:href="@{/products/delete/{id}(id=${p.id})}"
+                           onclick="return confirm('Are you sure?')">
+                            Delete
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="text-center mt-3">
+        <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+           th:href="@{/products(page=${i})}"
+           class="btn btn-outline-primary m-1"
+           th:text="${i + 1}">
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>
